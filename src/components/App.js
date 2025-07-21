@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Question from "./Question";
 import quiz from "../data/quiz";
 
@@ -6,17 +6,23 @@ function App() {
   const [questions, setQuestions] = useState(quiz);
   const [currentQuestionId, setCurrentQuestion] = useState(1);
   const [score, setScore] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(10); // ⏱️ Add timer state
+
   const currentQuestion = questions.find((q) => q.id === currentQuestionId);
 
   function handleQuestionAnswered(correct) {
-    if (currentQuestionId < questions.length) {
-      setCurrentQuestion((currentQuestionId) => currentQuestionId + 1);
-    } else {
-      setCurrentQuestion(null);
-    }
     if (correct) {
       setScore((score) => score + 1);
     }
+
+    // Move to next question or end game
+    if (currentQuestionId < questions.length) {
+      setCurrentQuestion((id) => id + 1);
+    } else {
+      setCurrentQuestion(null); // End quiz
+    }
+
+    setTimeRemaining(10); // 🔄 Reset timer for next question
   }
 
   return (
@@ -25,6 +31,8 @@ function App() {
         {currentQuestion ? (
           <Question
             question={currentQuestion}
+            timeRemaining={timeRemaining} // ⏱️ Pass timer props
+            setTimeRemaining={setTimeRemaining}
             onAnswered={handleQuestionAnswered}
           />
         ) : (
